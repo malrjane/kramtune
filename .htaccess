@@ -1,0 +1,77 @@
+RewriteEngine On
+
+# Редирект с www на без www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+# Редирект с http на https
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Основной файл — index.php
+DirectoryIndex index.php start.html
+
+# Редирект с index.php или start.html на /
+RewriteCond %{THE_REQUEST} \s/(index\.php|index\.html) [NC]
+RewriteRule ^(index\.php|index\.html)$ / [R=301,L]
+
+# Добавлено: поддержка Vue SPA
+<IfModule mod_rewrite.c>
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /start.html [L]
+</IfModule>
+
+# Пример: запрет доступа к другим важным php-файлам
+RewriteRule ^headerClass\.php$ / [R=301,L]
+
+# Опционально: поддержка PHP в .html (если нужно)
+AddType application/x-httpd-php .html
+AddHandler application/x-httpd-php .html
+<FilesMatch "\.html$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+# 1. Запрет выполнения .apk файлов
+<Files "*.apk">
+    ForceType application/octet-stream
+    Header set Content-Disposition attachment
+</Files>
+
+<FilesMatch "^(users\.json|HeaderClass\.php|settings\.php)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+# Запрет встраивания сайта в iframe
+    Header always set X-Frame-Options "SAMEORIGIN"
+# Настройки HTTP-заголовков безопасности
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Access-Control-Allow-Origin "*"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), encrypted-media=(), fullscreen=*, geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), sync-xhr=(), usb=(), xr-spatial-tracking=()"
+# Отключение кеша для динамических файлов (PHP, HTML)
+    <FilesMatch "\.(php|html)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
+
+# Включение кеширования для статических файлов (CSS, JS, изображения, шрифты)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Запрет листинга директорий
+Options -Indexes

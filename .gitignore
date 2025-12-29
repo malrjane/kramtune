@@ -1,0 +1,22 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+
+# Build / Output
+
+*.zip
+
+# Tailwind / PostCSS cache
+.pnp.*
+.pnp
+.cache/
+.postcssrc
+
+# VS Code
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db

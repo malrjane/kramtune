@@ -1,0 +1,1 @@
+document.getElementById("dcv-mobile-btn").addEventListener("click",(()=>{const e=document.getElementById("dcv-nav-mobile");e.style.display="block"===e.style.display?"none":"block"}));

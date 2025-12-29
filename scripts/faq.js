@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll(".faq__item").forEach((e=>{e.querySelector(".faq__question").addEventListener("click",(()=>{e.classList.toggle("is-active")}))}))}));
